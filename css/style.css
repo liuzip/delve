@@ -3,6 +3,14 @@ body{
     margin: 0px;
 }
 
+#forbiddenMask{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: transparent;
+    display: none;
+}
+
 #backgroundFramework{
     position: absolute;
     width: 100%;
@@ -15,7 +23,17 @@ body{
     height: 20%;
 }
 
-.monsterZone table{
+.monsterZone .monsterOverviewZone{
+    border-spacing: 0px;
+    width: 100%;
+    height: 100%;
+}
+
+.monsterZone .monsterOverviewZone td{
+
+}
+
+.monsterZone .monsterDetailZone{
     border-spacing: 0px;
     border-top: 1px solid grey;
     width: 100%;
@@ -23,10 +41,13 @@ body{
     border-right: 1px solid grey;
 }
 
-.monsterZone table td{
+.monsterZone .monsterDetailZone td{
     border-left: 1px solid grey;
     border-bottom: 1px solid grey;
+    text-align: center;
+    background-size: 100% 100%;
 }
+
 
 .ourZone{
     height: 30%;
@@ -41,14 +62,11 @@ body{
 
 .ourZone table{
     border-spacing: 0px;
-    border-top: 1px solid grey;
     width: 100%;
     height: 100%;
-    border-right: 1px solid grey;}
+}
 
 .ourZone table td{
-    border-left: 1px solid grey;
-    border-bottom: 1px solid grey;
 }
 
 .ourZone .diceList{
