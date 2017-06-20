@@ -8,6 +8,7 @@ var me = new Player({
     userDices = new Array(6),
     logAppend = function(text){
         $("#logArea").append(text + "</br>");
+        document.getElementById('logArea').scrollTop = document.getElementById('logArea').scrollHeight;
     },
     updateLock = function(){
         for(var i = 0; i < userDices.length; i ++){
@@ -117,7 +118,7 @@ var updateMonsterList = function(monster){
 
 for(var i = 0; i < monster.length; i ++){
     monster[i] = new Player({
-        name: "哥布林" + i,
+        name: "僵尸" + i + "号",
         HP: 5,
         point: [6]
     });

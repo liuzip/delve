@@ -31,4 +31,7 @@ Player.prototype.isDied = function(){
 
 Player.prototype.handleDamanage = function(damanage){
     this.currentHP -= damanage;
+    if(this.currentHP < 0){
+        this.currentHP = 0;
+    }
 }
