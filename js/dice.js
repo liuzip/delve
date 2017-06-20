@@ -1,14 +1,20 @@
 var Dice = function(){
     this.value = 1
     this.used = false;
+    this.locked = false;
 }
 
 Dice.prototype.roll = function(){
-    this.value = Math.floor(Math.random() * 6) + 1;
+    if(!this.locked){
+        this.value = Math.floor(Math.random() * 6) + 1;
+    }
 }
 
 Dice.prototype.dump = function(){
-    var newDice = new this;
+    var newDice = {
+        value: this.value,
+        used: this.used
+    };
     return newDice;
 }
 
