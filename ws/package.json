@@ -1,0 +1,26 @@
+{
+    "name": "delve",
+    "version": "1.0.0",
+    "description": "Mini Desktop Dungeon Game",
+    "main": "wsServer.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+    "type": "git",
+        "url": "git+ssh://git@github.com/liuzip/delve.git"
+    },
+    "keywords": [
+        "delve"
+    ],
+    "author": "Oliver",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/liuzip/delve/issues"
+    },
+    "dependencies": {
+        "ws": "3.0.0",
+        "protobufjs": "6.8.0"
+    },
+    "homepage": "https://github.com/liuzip/delve#readme"
+}
