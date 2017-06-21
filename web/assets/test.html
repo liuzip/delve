@@ -1,0 +1,61 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta name="robots" content="nofollow"/>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta content="always" name="referrer">
+        <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1, user-scalable=no"> 
+        <link rel="icon" href="favicon.png" type="image/png">
+        <title>delve</title>
+        <!--script type="text/javascript" src="http://lib.sinaapp.com/js/jquery/1.9.1/jquery-1.9.1.min.js"></script>
+        <script type="text/javascript" src="http://cdn.rawgit.com/dcodeIO/protobuf.js/6.8.0/dist/protobuf.min.js"></script-->
+        <script type="text/javascript" src="js/lib/jquery.min.js"></script>
+        <script type="text/javascript" src="js/lib/protobuf.js"></script>
+        <script type="text/javascript" src="../../util/proto/test.proto.js"></script>
+    </head>
+    <body>
+        <textarea id="sendInfo"></textarea>
+        <input type="button" id="send" value="send">
+        <div id="receiveInfo" style="border: 1px solid grey; width: 200px; height: 200px; word-wrap: break-word;">
+        </div>
+        <script>
+            function testEncode(jsonData) {
+                var message = TestModel.create(jsonData);
+
+                return TestModel.encode(message).finish();
+            }
+            var wss = new WebSocket("ws://127.0.0.1:8000");
+            wss.onmessage = function(evt){
+                var reader = new FileReader();
+                reader.onload = function(evt){
+                    if(evt.target.readyState == FileReader.DONE){
+                        var data = new Uint8Array(evt.target.result);
+                        $("#receiveInfo").text(JSON.stringify(TestModel.decode(data)));
+                    }
+                }
+                reader.readAsArrayBuffer(evt.data);
+            }
+
+            wss.onopen = function(){
+                console.log("onopen");
+            }
+
+            wss.onclose = function(){
+                console.log("onclose");
+            }
+
+            $("#send").click(function(){
+                var msg = $("#sendInfo").val();
+                wss.send(testEncode({
+                    name: $("#sendInfo").val(),
+                    age: Math.floor(Math.random() * 100),
+                    male: true
+                }));
+            });
+        </script>
+    </body>
+</html>
+
+
+
+
