@@ -7,14 +7,18 @@
         <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1, user-scalable=no"> 
         <link rel="icon" href="favicon.png" type="image/png">
         <title>delve</title>
-        <script type="text/javascript" src="http://lib.sinaapp.com/js/jquery/1.9.1/jquery-1.9.1.min.js"></script>
-        <script type="text/javascript" src="http://cdn.rawgit.com/dcodeIO/protobuf.js/6.8.0/dist/protobuf.min.js"></script>
-        <script type="text/javascript" src="js/skill.js"></script>
-        <script type="text/javascript" src="js/player.js"></script>
-        <script type="text/javascript" src="js/monster.js"></script>
-        <script type="text/javascript" src="js/dice.js"></script>
-        <script type="text/javascript" src="js/map.js"></script>
-        <link rel="stylesheet" type="text/css" href="css/style.css"></link>
+        <!--script type="text/javascript" src="http://lib.sinaapp.com/js/jquery/1.9.1/jquery-1.9.1.min.js"></script>
+        <script type="text/javascript" src="http://cdn.rawgit.com/dcodeIO/protobuf.js/6.8.0/dist/protobuf.min.js"></script-->
+        <script type="text/javascript" src="assets/js/skill.js"></script>
+        <script type="text/javascript" src="assets/js/dice.js"></script>
+        <script type="text/javascript" src="assets/js/map.js"></script>
+
+
+        <script type="text/javascript" src="assets/js/lib/jquery.min.js"></script>
+        <script type="text/javascript" src="assets/js/lib/protobuf.js"></script>
+        <script type="text/javascript" src="util/proto/test.proto.js"></script>
+        <script type="text/javascript" src="model/role.js"></script>
+        <link rel="stylesheet" type="text/css" href="assets/css/style.css"></link>
     </head>
     <body>
         <table id="backgroundFramework">
@@ -23,7 +27,7 @@
                     <table class="monsterOverviewZone">
                         <tr>
                             <td id="monsterHeader">
-                                <img src="img/zombie.jpg">
+                                <img src="assets/img/zombie.jpg">
                             </td>
                             <td>
                                 <table class="monsterDetailZone"></table>
@@ -47,22 +51,22 @@
                                     <tr>
                                         <td>
                                             <div class="diceDiv" id="dice1">
-                                                <img class="dice" src="img/dice1.png">
+                                                <img class="dice" src="assets/img/dice1.png">
                                             </div>
                                             <div class="diceDiv" id="dice2">
-                                                <img class="dice" src="img/dice1.png">
+                                                <img class="dice" src="assets/img/dice1.png">
                                             </div>
                                             <div class="diceDiv" id="dice3">
-                                                <img class="dice" src="img/dice1.png">
+                                                <img class="dice" src="assets/img/dice1.png">
                                             </div>
                                             <div class="diceDiv" id="dice4">
-                                                <img class="dice" src="img/dice1.png">
+                                                <img class="dice" src="assets/img/dice1.png">
                                             </div>
                                             <div class="diceDiv" id="dice5">
-                                                <img class="dice" src="img/dice1.png">
+                                                <img class="dice" src="assets/img/dice1.png">
                                             </div>
                                             <div class="diceDiv" id="dice6">
-                                                <img class="dice" src="img/dice1.png">
+                                                <img class="dice" src="assets/img/dice1.png">
                                             </div>
                                         </td>
                                         <td>
@@ -75,7 +79,7 @@
                         </tr>
                         <tr>
                             <td id="myHeader" rowspan="3">
-                                <img src="img/player.jpg">
+                                <img src="assets/img/player.jpg">
                             </td>
                             <td id="myName"></td>
                         </tr>
@@ -92,7 +96,7 @@
             </tr>
         </table>
         <div id="forbiddenMask"></div>
-        <script type="text/javascript" src="js/index.js"></script>
+        <script type="text/javascript" src="assets/js/index.js"></script>
     </body>
 </html>
 

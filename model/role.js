@@ -1,12 +1,17 @@
-var Monster = function(opt){
+var Role = function(opt){
     this.name = opt.name;
-    this.maxHP = this.HP;
-    this.currentHP = this.HP;
-    this.attackPoint = this.point;
+    this.maxHP = opt.HP;
+    this.currentHP = opt.HP;
+    this.attackPoint = opt.point;
 }
 
-Monster.prototype.damanage = function(list){
+Role.prototype.damanage = function(list){
     var damanage = 0;
+
+    if(this.currentHP == 0){
+        return 0;
+    }
+
     for(var i = 0; i < list.length; i ++){
         for(var j = 0; j < this.attackPoint.length; j ++){
             if(this.attackPoint[j] == list[i].value &&
@@ -20,8 +25,7 @@ Monster.prototype.damanage = function(list){
     return damanage;
 }
 
-
-Monster.prototype.isDied = function(){
+Role.prototype.isDied = function(){
     if(this.currentHP <= 0){
         return true;
     }
@@ -30,10 +34,15 @@ Monster.prototype.isDied = function(){
     }
 }
 
-Monster.prototype.handleDamanage = function(damanage){
+Role.prototype.handleDamanage = function(damanage){
     this.currentHP -= damanage;
     if(this.currentHP < 0){
         this.currentHP = 0;
     }
+}
+
+
+if(typeof module !== 'undefined' && module.exports){
+    module.exports = Role;
 }
 

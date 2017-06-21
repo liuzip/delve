@@ -1,4 +1,4 @@
-var me = new Player({
+var me = new Role({
         name: "Player",
         HP: 10,
         point: [5, 6]
@@ -13,7 +13,7 @@ var me = new Player({
     updateLock = function(){
         for(var i = 0; i < userDices.length; i ++){
             if(userDices[i].locked){
-                $("#dice" + (i + 1)).append("<img class='lock' src='img/lock.png'>");
+                $("#dice" + (i + 1)).append("<img class='lock' src='assets/img/lock.png'>");
             }
             else{
                 $("#dice" + (i + 1)).find(".lock").remove();
@@ -31,7 +31,7 @@ var me = new Player({
 
         for(var i = 0; i < userDices.length; i ++){
             userDices[i].roll();
-            $("#dice" + (i + 1) + " img").attr("src", "img/dice" + userDices[i].value + ".png");
+            $("#dice" + (i + 1) + " img").attr("src", "assets/img/dice" + userDices[i].value + ".png");
         }
 
         updateLock();
@@ -102,7 +102,7 @@ var updateMonsterList = function(monster){
             };
 
         if(monster[i].isDied()){
-            monsterNameTD.css("backgroundImage", "url(img/dead.png)");
+            monsterNameTD.css("backgroundImage", "url(assets/img/dead.png)");
         }
 
         monsterNameTD.click(clickHandler);
@@ -117,7 +117,7 @@ var updateMonsterList = function(monster){
 }
 
 for(var i = 0; i < monster.length; i ++){
-    monster[i] = new Player({
+    monster[i] = new Role({
         name: "僵尸" + i + "号",
         HP: 5,
         point: [6]

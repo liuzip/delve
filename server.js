@@ -83,4 +83,3 @@ protobuf.load("./util/proto/test.proto", function(err, root) {
     console.log("WS server runing at port: " + WSPORT + ".");
 });
 
-
