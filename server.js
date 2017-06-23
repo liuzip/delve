@@ -10,7 +10,8 @@ const WebSocket = require('ws'); // https://github.com/websockets/ws
 const wss = new WebSocket.Server({ port: WSPORT });
 const protobuf = require("protobufjs"); // https://github.com/dcodeIO/protobuf.js
 
-const handler = require("./handler")
+const handler = require("./handler");
+const tools = require("./util/common/tools");
 
 var server = http.createServer(function (request, response) {
     var pathname = url.parse(request.url).pathname;
@@ -68,7 +69,7 @@ protobuf.load("./util/proto/test.proto", function(err, root) {
 
     wss.on("connection", function(ws){
         ws.on("message", function(message){
-            var testVal = TestModel.decode(message);
+            var encodedMsg = TestModel.decode(message),;
      
             console.log(JSON.stringify(testVal));
         });
@@ -77,7 +78,9 @@ protobuf.load("./util/proto/test.proto", function(err, root) {
             name: "test",
             age: 28,
             male: true
-        })
+        });
+
+        sendMsg(ws, tools.calcualteToken());
     });
 
     console.log("WS server runing at port: " + WSPORT + ".");
