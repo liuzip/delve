@@ -10,8 +10,7 @@ const WebSocket = require('ws'); // https://github.com/websockets/ws
 const wss = new WebSocket.Server({ port: WSPORT });
 const protobuf = require("protobufjs"); // https://github.com/dcodeIO/protobuf.js
 
-const handler = require("./handler");
-const tools = require("./util/common/tools");
+const handler = require("./handler/handler");
 
 var server = http.createServer(function (request, response) {
     var pathname = url.parse(request.url).pathname;
@@ -52,35 +51,31 @@ var server = http.createServer(function (request, response) {
 server.listen(WEBPORT);
 console.log("WEB server runing at port: " + WEBPORT + ".");
 
-protobuf.load("./util/proto/test.proto", function(err, root) {
+protobuf.load("./util/proto/packet.proto", function(err, root) {
     if (err)
         throw err;
-    var TestModel = root.lookupType("test.testModel");
+    var PKTModel = root.lookupType("packet.packetModel");
     var sendMsg = function(ws, msg){
-        var errMsg = TestModel.verify(msg);
+        var errMsg = PKTModel.verify(msg);
         if (errMsg)
             throw Error(errMsg);
 
-        var message = TestModel.create(msg),
-            buffer = TestModel.encode(message).finish();
+        var message = PKTModel.create(msg),
+            buffer = PKTModel.encode(message).finish();
 
         ws.send(buffer);
     }
 
     wss.on("connection", function(ws){
-        ws.on("message", function(message){
-            var encodedMsg = TestModel.decode(message),;
+        ws.on("message", function(data){
+            var msg = PKTModel.decode(data);
      
-            console.log(JSON.stringify(testVal));
+            sendMsg(ws, {
+                msgID: msg.msgID,
+                cmd: msg.cmd,
+                content: handler[msg.cmd](msg.content)
+            })
         });
-
-        sendMsg(ws, {
-            name: "test",
-            age: 28,
-            male: true
-        });
-
-        sendMsg(ws, tools.calcualteToken());
     });
 
     console.log("WS server runing at port: " + WSPORT + ".");

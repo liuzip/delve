@@ -1,0 +1,7 @@
+package packet;
+
+message packetModel{
+    required string msgID = 1;
+    required string cmd = 2;
+    optional string content = 3;
+}

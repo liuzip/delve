@@ -11,7 +11,7 @@
         <script type="text/javascript" src="http://cdn.rawgit.com/dcodeIO/protobuf.js/6.8.0/dist/protobuf.min.js"></script-->
         <script type="text/javascript" src="assets/js/lib/jquery.min.js"></script>
         <script type="text/javascript" src="assets/js/lib/protobuf.js"></script>
-        <script type="text/javascript" src="util/proto/test.proto.js"></script>
+        <!--script type="text/javascript" src="util/proto/test.proto.js"></script-->
     </head>
     <body>
         <textarea id="sendInfo"></textarea>
@@ -19,43 +19,49 @@
         <div id="receiveInfo" style="border: 1px solid grey; width: 200px; height: 200px; word-wrap: break-word;">
         </div>
         <script>
-            function testEncode(jsonData) {
-                var message = TestModel.create(jsonData);
+            protobuf.load("./util/proto/test.proto", function(err, root) {
+                if (err)
+                    throw err;
+                var TestModel = root.lookupType("test.testModel");
 
-                return TestModel.encode(message).finish();
-            }
-            var wss = new WebSocket("ws://127.0.0.1:8000");
-            wss.onmessage = function(evt){
-                var reader = new FileReader();
-                reader.onload = function(evt){
-                    if(evt.target.readyState == FileReader.DONE){
-                        var data = new Uint8Array(evt.target.result);
-                        $("#receiveInfo").text(JSON.stringify(TestModel.decode(data)));
-                    }
+                function testEncode(jsonData) {
+                    var message = TestModel.create(jsonData);
+
+                    return TestModel.encode(message).finish();
                 }
-                reader.readAsArrayBuffer(evt.data);
-            }
+                var wss = new WebSocket("ws://127.0.0.1:8000");
+                wss.onmessage = function(evt){
+                    var reader = new FileReader();
+                    reader.onload = function(evt){
+                        if(evt.target.readyState == FileReader.DONE){
+                            var data = new Uint8Array(evt.target.result);
+                            console.log(TestModel.decode(data));
+                            console.log(typeof TestModel.decode(data));
+                            $("#receiveInfo").text(JSON.stringify(TestModel.decode(data)));
+                        }
+                    }
+                    reader.readAsArrayBuffer(evt.data);
+                }
 
-            wss.onopen = function(){
-                console.log("onopen");
-            }
+                wss.onopen = function(){
+                    console.log("onopen");
+                }
 
-            wss.onclose = function(){
-                console.log("onclose");
-            }
+                wss.onclose = function(){
+                    console.log("onclose");
+                }
 
-            $("#send").click(function(){
-                var msg = $("#sendInfo").val();
-                wss.send(testEncode({
-                    name: $("#sendInfo").val(),
-                    age: Math.floor(Math.random() * 100),
-                    male: true
-                }));
+                $("#send").click(function(){
+                    var msg = $("#sendInfo").val();
+                    wss.send(testEncode({
+                        name: $("#sendInfo").val(),
+                        age: Math.floor(Math.random() * 100),
+                        male: true
+                    }));
+                });
             });
         </script>
     </body>
 </html>
-
-
 
 
