@@ -8,14 +8,13 @@ protobuf.load("./util/proto/packet.proto", function(err, root) {
     if (err)
         throw err;
 
-    var PKTModel = root.lookupType("packet.packetModel"),
+    var PacketModel = root.lookupType("packet.packetModel"),
         clock = new Date(),
         encode = function(msg){
-            console.log(msg);
-            var errMsg = PKTModel.verify(msg);
+            var errMsg = PacketModel.verify(msg);
             if (errMsg)
                 throw Error(errMsg);
-            return PKTModel.encode(PKTModel.create(msg)).finish();
+            return PacketModel.encode(PacketModel.create(msg)).finish();
         },
         randomMsgID = function(cmd){
             return cmd + "_" + Math.floor(Math.random() * 10000) + clock.getTime();
@@ -27,11 +26,11 @@ protobuf.load("./util/proto/packet.proto", function(err, root) {
         reader.onload = function(evt){
             if(evt.target.readyState == FileReader.DONE){
                 var data = new Uint8Array(evt.target.result),
-                    msg = PKTModel.decode(data)
+                    msg = PacketModel.decode(data)
                 console.log(msg);
                 if(window.connector.pools[msg.msgID]){
                     if(window.connector.pools[msg.msgID].callback){
-                        window.connector.pools[msg.msgID].callback(msg.content);
+                        window.connector.pools[msg.msgID].callback(JSON.parse(msg.content));
                     }
                     delete window.connector.pools[msg.msgID];
                 }
@@ -43,7 +42,6 @@ protobuf.load("./util/proto/packet.proto", function(err, root) {
     wss.onopen = function(){
         window.connector.connected = true;
         console.log("onopen");
-        connector.sendMsg("example");
     }
 
     wss.onclose = function(){
@@ -52,8 +50,12 @@ protobuf.load("./util/proto/packet.proto", function(err, root) {
     }
 
     window.connector.sendMsg = function(cmd, data, callback){
-        console.log(window.connector.connected, cmd)
         if(window.connector.connected){
+            if(typeof data == "function"){
+                callback = data;
+                data = undefined;
+            }
+
             var msg = {
                 msgID: randomMsgID(cmd),
                 cmd: cmd
@@ -65,10 +67,18 @@ protobuf.load("./util/proto/packet.proto", function(err, root) {
             };
 
             if(data != undefined){
-                msg.content = ((typeof data == "object")?(JSON.stringify(data)):data);
+                msg.content = ((typeof data == "object" || typeof data == "array")?(JSON.stringify(data)):data);
             }
 
+            console.log(msg);
+
             wss.send(encode(msg));
+        }
+        else{
+            setTimeout(function(){
+                this.sendMsg(cmd, data, callback);
+            },
+            100);
         }
     }
 });

@@ -11,6 +11,7 @@ const wss = new WebSocket.Server({ port: WSPORT });
 const protobuf = require("protobufjs"); // https://github.com/dcodeIO/protobuf.js
 
 const handler = require("./handler/handler");
+const Game = require("./model/game");
 
 var server = http.createServer(function (request, response) {
     var pathname = url.parse(request.url).pathname;
@@ -54,26 +55,31 @@ console.log("WEB server runing at port: " + WEBPORT + ".");
 protobuf.load("./util/proto/packet.proto", function(err, root) {
     if (err)
         throw err;
-    var PKTModel = root.lookupType("packet.packetModel");
+    var PacketModel = root.lookupType("packet.packetModel");
     var sendMsg = function(ws, msg){
-        var errMsg = PKTModel.verify(msg);
+        var errMsg = PacketModel.verify(msg);
         if (errMsg)
             throw Error(errMsg);
 
-        var message = PKTModel.create(msg),
-            buffer = PKTModel.encode(message).finish();
+        var message = PacketModel.create(msg),
+            buffer = PacketModel.encode(message).finish();
 
         ws.send(buffer);
     }
 
     wss.on("connection", function(ws){
+        ws.game = new Game();
+
         ws.on("message", function(data){
-            var msg = PKTModel.decode(data);
+            var msg = PacketModel.decode(data);
+            console.log(msg);
+
+            var content = handler[msg.cmd](ws.game, ((msg.content != undefined && msg.content.length > 1)?(JSON.parse(msg.content)):undefined));
      
             sendMsg(ws, {
                 msgID: msg.msgID,
                 cmd: msg.cmd,
-                content: handler[msg.cmd](msg.content)
+                content: (content == undefined)?"":((typeof content == "object")?(JSON.stringify(content)):content)
             })
         });
     });

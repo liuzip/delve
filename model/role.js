@@ -1,8 +1,17 @@
+var Dice = require("./dice");
+
 var Role = function(opt){
     this.name = opt.name;
     this.maxHP = opt.HP;
     this.currentHP = opt.HP;
     this.attackPoint = opt.point;
+    this.rollTimes = 1;
+    this.diceList = new Array(6);
+
+    for(var i = 0; i < this.diceList.length; i ++){
+        this.diceList[i] = new Dice();
+        this.diceList[i].roll();
+    }
 }
 
 Role.prototype.damanage = function(list){
