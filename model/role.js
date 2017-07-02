@@ -5,20 +5,48 @@ var Role = function(opt){
     this.maxHP = opt.HP;
     this.currentHP = opt.HP;
     this.attackPoint = opt.point;
-    this.rollTimes = 1;
-    this.diceList = new Array(6);
+    this.type = opt.type;
+    this.state = []; // frozen
+}
 
-    for(var i = 0; i < this.diceList.length; i ++){
-        this.diceList[i] = new Dice();
-        this.diceList[i].roll();
+Role.prototype.removeState = function(i){
+    if(this.state[i] != undefined){
+        this.state[i].idle --;
+        if(this.state[i].idle == 0){
+            this.state.splice(i, 1);
+        }
     }
 }
 
 Role.prototype.damanage = function(list){
-    var damanage = 0;
+    var damanage = 0,
+        frozen = false;
 
     if(this.currentHP == 0){
         return 0;
+    }
+
+    if(list == undefined){
+        for(var i = 0; i < this.state.length; i ++){
+            if(this.state[i] == "frozen"){
+                frozen = true;
+            }
+        }
+
+        for(var j = 0; j < this.diceList.length; j ++){
+            this.diceList[j].roll();
+        }
+
+        if(frozen){
+            list = new Array(4);
+        }
+        else{
+            list = new Array(6);
+        }
+
+        for(var j = 0; j < list.length; j ++){
+            list[j] = this.diceList[j].dump();
+        }
     }
 
     for(var i = 0; i < list.length; i ++){

@@ -53,11 +53,20 @@ body{
     height: 30%;
 }
 
-#myHeader,
 #monsterHeader,
-#myHeader img,
 #monsterHeader img{
     width: 100px;
+    text-align: center;
+}
+
+.playerHead img{
+    width: 50px;
+}
+
+.playerHead td,
+.playerName td,
+.playerHP td{
+    text-align: center;
 }
 
 .ourZone table{

@@ -1,4 +1,6 @@
 const tools = require("../util/common/tools");
+const Game = require("../model/game");
+const Role = require("../model/role");
 
 var handler = {};
 
@@ -6,20 +8,55 @@ handler.example = function(){
     return "example";
 };
 
-handler.getDices = function(game){
+handler.initGame = function(game){
+    game.user[0] = new Role({
+        name: "海盗",
+        type: "pirate",
+        HP: 6,
+        point: [5, 6]
+    });
+
+    game.user[1] = new Role({
+        name: "小偷",
+        type: "thief",
+        HP: 3,
+        point: [5, 6]
+    });
+
+    game.user[2] = new Role({
+        name: "护士",
+        type: "nurse",
+        HP: 3,
+        point: [5, 6]
+    });
+
+    game.user[3] = new Role({
+        name: "巫师",
+        type: "wizard",
+        HP: 1,
+        point: [5, 6]
+    });
+
     return {
-        rollTimes: game.user.rollTimes,
-        diceList: game.user.diceList
+        success: true
     };
 };
+
+handler.getDices = function(game){
+    return {
+        rollTimes: game.rollTimes,
+        list: game.diceList
+    };
+};
+
 
 handler.getUser = function(game){
     return game.user;
 };
 
 handler.rollDices = function(game, list){
-    var diceList = game.user.diceList;
-    if(game.user.rollTimes != 3){
+    var diceList = game.diceList;
+    if(game.rollTimes != 3){
         for(var i = 0; i < diceList.length; i ++){
             diceList[i].locked = false;
             for(var j = 0; j < list.length; j ++){
@@ -32,7 +69,7 @@ handler.rollDices = function(game, list){
             diceList[i].roll();
         }
 
-        game.user.rollTimes ++;
+        game.rollTimes ++;
     }
     else{
         for(var i = 0; i < diceList.length; i ++){
@@ -47,8 +84,8 @@ handler.rollDices = function(game, list){
     }
 
     return {
-        rollTimes: game.user.rollTimes,
-        diceList: game.user.diceList
+        rollTimes: game.rollTimes,
+        list: game.diceList
     };
 };
 
@@ -59,7 +96,7 @@ handler.getCurrentMonsters = function(game){
 handler.attackMonster = function(game, data){
     var list = new Array(6);
     for(var j = 0; j < list.length; j ++){
-        list[j] = game.user.diceList[j].dump();
+        list[j] = game.diceList[j].dump();
     }
 
     var damanage = game.user.damanage(list),
@@ -81,16 +118,7 @@ handler.attackUser = function(game){
 
     for(var i = 0; i < monsters.length; i ++){
         if(!(monsters[i].isDied())){
-            for(var j = 0; j < monsters[i].diceList.length; j ++){
-                monsters[i].diceList[j].roll();
-            }
-            var list = new Array(6),
-                damanage = 0;
-            for(var j = 0; j < list.length; j ++){
-                list[j] = monsters[i].diceList[j].dump();
-            }
-
-            damanage = monsters[i].damanage(list);
+            var damanage = monsters[i].damanage();
             game.user.handleDamanage(damanage);
 
             damanageList.push({
@@ -105,11 +133,11 @@ handler.attackUser = function(game){
         game.current ++;
     }
 
-    game.user.rollTimes = 1;
-    for(var i = 0; i < game.user.diceList.length; i ++){
-        game.user.diceList[i].roll();
-        game.user.diceList[i].locked = false;
-        game.user.diceList[i].used = false;
+    game.rollTimes = 1;
+    for(var i = 0; i < game.diceList.length; i ++){
+        game.diceList[i].roll();
+        game.diceList[i].locked = false;
+        game.diceList[i].used = false;
     }
 
     return damanageList;
