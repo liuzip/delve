@@ -4,11 +4,8 @@ Mini dungeon game
 
 
 # install
-1. cd ws
-2. npm install
-3. node wsServer.js
-4. cd ../web
-5. node webServer.js
+1. npm install
+2. node server.js
 
 
 # current node version
