@@ -33,10 +33,6 @@ Role.prototype.damanage = function(list){
             }
         }
 
-        for(var j = 0; j < this.diceList.length; j ++){
-            this.diceList[j].roll();
-        }
-
         if(frozen){
             list = new Array(4);
         }
@@ -45,7 +41,8 @@ Role.prototype.damanage = function(list){
         }
 
         for(var j = 0; j < list.length; j ++){
-            list[j] = this.diceList[j].dump();
+            list[j] = new Dice();
+            list[j].roll();
         }
     }
 

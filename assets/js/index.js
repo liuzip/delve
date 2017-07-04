@@ -45,9 +45,11 @@
                 attackMonster = function(param){
                     var dtd = $.Deferred(); 
                     connector.sendMsg("attackMonster", param, function(data){
-                        logAppend(data.name + "对" + data.monsters + "造成了" + data.damanage + "点伤害");
-                        if(data.hp <= 0){
-                            logAppend(data.monsters + "挂了");
+                        for(var i = 0; i < data.length; i ++){
+                            logAppend(data[i].name + "对" + data[i].monsters + "造成了" + data[i].damanage + "点伤害");
+                            if(data[i].hp <= 0){
+                                logAppend(data[i].monsters + "挂了");
+                            }
                         }
                         dtd.resolve();
                     });

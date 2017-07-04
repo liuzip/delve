@@ -20,21 +20,21 @@ handler.initGame = function(game){
         name: "小偷",
         type: "thief",
         HP: 3,
-        point: [5, 6]
+        point: [4]
     });
 
     game.user[2] = new Role({
         name: "护士",
         type: "nurse",
         HP: 3,
-        point: [5, 6]
+        point: [3]
     });
 
     game.user[3] = new Role({
         name: "巫师",
         type: "wizard",
         HP: 1,
-        point: [5, 6]
+        point: [1, 2]
     });
 
     return {
@@ -99,33 +99,81 @@ handler.attackMonster = function(game, data){
         list[j] = game.diceList[j].dump();
     }
 
-    var damanage = game.user.damanage(list),
-        monsters = game.getCurrentMonsters();
+    var user = game.user,
+        monsters = game.getCurrentMonsters(),
+        ret = [];
 
-    monsters[data.index].handleDamanage(damanage);
+    for(var i = 0; i < user.length; i ++){
+        var damanage = game.user[i].damanage(list);
+        monsters[data.index].handleDamanage(damanage);
 
-    return {
-        name: game.user.name,
-        monsters: monsters[data.index].name,
-        hp: monsters[data.index].currentHP,
-        damanage: damanage
+        ret.push({
+            name: game.user[i].name,
+            monsters: monsters[data.index].name,
+            hp: monsters[data.index].currentHP,
+            damanage: damanage
+        })
     }
+
+    return ret;
 };
 
-handler.attackUser = function(game){
+handler.attackUser = function(game, data){
     var monsters = game.getCurrentMonsters(),
         damanageList = [];
 
     for(var i = 0; i < monsters.length; i ++){
         if(!(monsters[i].isDied())){
             var damanage = monsters[i].damanage();
-            game.user.handleDamanage(damanage);
+            for(var j = 0; j < game.user.length; j ++){
+                if(!game.user[j].isDied()){
+                    game.user[j].handleDamanage(damanage);
 
-            damanageList.push({
-                name: game.user.name,
-                monsters: monsters[i].name,
-                damanage: damanage
-            });
+                    damanageList.push({
+                        name: game.user[j].name,
+                        monsters: monsters[i].name,
+                        damanage: damanage
+                    });
+                    break;
+                }
+            }
+        }
+    }
+
+    if(damanageList.length == 0){
+        game.current ++;
+    }
+
+    game.rollTimes = 1;
+    for(var i = 0; i < game.diceList.length; i ++){
+        game.diceList[i].roll();
+        game.diceList[i].locked = false;
+        game.diceList[i].used = false;
+    }
+
+    return damanageList;
+};
+
+
+handler.generateMonsterDanamage = function(game, data){
+    var monsters = game.getCurrentMonsters(),
+        damanageList = [];
+
+    for(var i = 0; i < monsters.length; i ++){
+        if(!(monsters[i].isDied())){
+            var damanage = monsters[i].damanage();
+            for(var j = 0; j < game.user.length; j ++){
+                if(!game.user[j].isDied()){
+                    game.user[j].handleDamanage(damanage);
+
+                    damanageList.push({
+                        name: game.user[j].name,
+                        monsters: monsters[i].name,
+                        damanage: damanage
+                    });
+                    break;
+                }
+            }
         }
     }
 
