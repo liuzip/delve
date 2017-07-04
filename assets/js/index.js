@@ -46,7 +46,7 @@
                     var dtd = $.Deferred(); 
                     connector.sendMsg("attackMonster", param, function(data){
                         for(var i = 0; i < data.length; i ++){
-                            logAppend(data[i].name + "对" + data[i].monsters + "造成了" + data[i].damanage + "点伤害");
+                            logAppend(data[i].name + "对" + data[i].monsters + "造成了" + data[i].damage + "点伤害");
                             if(data[i].hp <= 0){
                                 logAppend(data[i].monsters + "挂了");
                             }
@@ -65,12 +65,67 @@
                         $.when(attackMonster({
                             index: index
                         })).done(function(){
-                            connector.sendMsg("attackUser", function(list){
-                                for(var i = 0; i < list.length; i ++){
-                                    logAppend(list[i].monsters + "对" + list[i].name + "造成了" + list[i].damanage + "点伤害");
+                            connector.sendMsg("generateMonsterDamage", function(data){
+                                var userTbl = $("<table id='handleMonsterDamage'></table>");
+                                userTbl.append("<tr>" +
+                                    "<td colspan = '5'>对方共造成" + data.damage + "点伤害</td>" +
+                                    "</tr>");
+                                userTbl.append("<tr>" +
+                                    "<td colspan = '5' tdType = 'left' left = '" + data.damage + "'>剩余" + data.damage + "点伤害</td>" +
+                                    "</tr>");
+                                for(var i = 0; i < gUsers.length; i ++){
+                                    userTbl.append("<tr>" +
+                                        "<td>" + gUsers[i].name + "</td>" +
+                                        "<td>" + gUsers[i].currentHP + "HP</td>" +
+                                        "<td tdType = 'minus'>-</td>" +
+                                        "<td userType = '" + gUsers[i].type + "' tdType = 'result'>0</td>" +
+                                        "<td tdType = 'plus'>+</td>" +
+                                        "</tr>");
                                 }
 
-                                updateAllState();
+                                userTbl.css({
+                                    width: "100%",
+                                    textAlign: "center"
+                                });
+
+                                userTbl.find("td[tdType=minus]").each(function(){
+                                    $(this).click(function(){
+                                        var currentPoint = parseInt($(this).next().text());
+                                        if(currentPoint > 0){
+                                            $(this).next().text(currentPoint - 1);
+                                            var left = parseInt($("#handleMonsterDamage").find("td[tdType=left]").attr("left"));
+                                            $("#handleMonsterDamage").find("td[tdType=left]").attr("left", left + 1);
+                                            $("#handleMonsterDamage").find("td[tdType=left]").text("剩余" + (left + 1) + "点伤害")
+                                        }
+                                    });
+                                });
+
+                                userTbl.find("td[tdType=plus]").each(function(){
+                                    $(this).click(function(){
+                                        var left = parseInt($("#handleMonsterDamage").find("td[tdType=left]").attr("left"));
+                                        if(left > 0){
+                                            $(this).prev().text(parseInt($(this).prev().text()) + 1);
+                                            $("#handleMonsterDamage").find("td[tdType=left]").attr("left", left - 1);
+                                            $("#handleMonsterDamage").find("td[tdType=left]").text("剩余" + (left - 1) + "点伤害")
+                                        }
+                                    });
+                                });
+
+                                doDialog(userTbl, function(){
+                                    var handleDamageList = [];
+                                    $("#handleMonsterDamage").find("td[tdType=result]").each(function(){
+                                        handleDamageList.push({
+                                            type: $(this).attr("userType"),
+                                            damage: parseInt($(this).text())
+                                        });
+                                    });
+                                    connector.sendMsg("userHandleDamage", handleDamageList, function(list){
+                                        for(var i = 0; i < list.length; i ++){
+                                            logAppend(list[i].name + "受到了" + list[i].damage + "点伤害");
+                                        }
+                                        updateAllState();
+                                    });
+                                });
                             });
                         });
                     };

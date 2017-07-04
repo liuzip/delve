@@ -18,32 +18,12 @@ Role.prototype.removeState = function(i){
     }
 }
 
-Role.prototype.damanage = function(list){
-    var damanage = 0,
+Role.prototype.damage = function(list){
+    var damage = 0,
         frozen = false;
 
     if(this.currentHP == 0){
         return 0;
-    }
-
-    if(list == undefined){
-        for(var i = 0; i < this.state.length; i ++){
-            if(this.state[i] == "frozen"){
-                frozen = true;
-            }
-        }
-
-        if(frozen){
-            list = new Array(4);
-        }
-        else{
-            list = new Array(6);
-        }
-
-        for(var j = 0; j < list.length; j ++){
-            list[j] = new Dice();
-            list[j].roll();
-        }
     }
 
     for(var i = 0; i < list.length; i ++){
@@ -51,12 +31,12 @@ Role.prototype.damanage = function(list){
             if(this.attackPoint[j] == list[i].value &&
                 list[i].used == false){
                 list[i].used = true;
-                damanage ++;
+                damage ++;
             }
         }
     }
 
-    return damanage;
+    return damage;
 }
 
 Role.prototype.isDied = function(){
@@ -68,13 +48,12 @@ Role.prototype.isDied = function(){
     }
 }
 
-Role.prototype.handleDamanage = function(damanage){
-    this.currentHP -= damanage;
+Role.prototype.handleDamage = function(damage){
+    this.currentHP -= damage;
     if(this.currentHP < 0){
         this.currentHP = 0;
     }
 }
-
 
 if(typeof module !== 'undefined' && module.exports){
     module.exports = Role;

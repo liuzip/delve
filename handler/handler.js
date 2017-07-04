@@ -1,6 +1,5 @@
 const tools = require("../util/common/tools");
 const Game = require("../model/game");
-const Role = require("../model/role");
 
 var handler = {};
 
@@ -9,33 +8,7 @@ handler.example = function(){
 };
 
 handler.initGame = function(game){
-    game.user[0] = new Role({
-        name: "海盗",
-        type: "pirate",
-        HP: 6,
-        point: [5, 6]
-    });
-
-    game.user[1] = new Role({
-        name: "小偷",
-        type: "thief",
-        HP: 3,
-        point: [4]
-    });
-
-    game.user[2] = new Role({
-        name: "护士",
-        type: "nurse",
-        HP: 3,
-        point: [3]
-    });
-
-    game.user[3] = new Role({
-        name: "巫师",
-        type: "wizard",
-        HP: 1,
-        point: [1, 2]
-    });
+    game.initGame();
 
     return {
         success: true
@@ -104,80 +77,60 @@ handler.attackMonster = function(game, data){
         ret = [];
 
     for(var i = 0; i < user.length; i ++){
-        var damanage = game.user[i].damanage(list);
-        monsters[data.index].handleDamanage(damanage);
+        var damage = game.user[i].damage(list);
+        monsters[data.index].handleDamage(damage);
 
         ret.push({
             name: game.user[i].name,
             monsters: monsters[data.index].name,
             hp: monsters[data.index].currentHP,
-            damanage: damanage
+            damage: damage
         })
     }
 
     return ret;
 };
 
-handler.attackUser = function(game, data){
+handler.generateMonsterDamage = function(game){
     var monsters = game.getCurrentMonsters(),
-        damanageList = [];
+        damage = 0;
 
     for(var i = 0; i < monsters.length; i ++){
-        if(!(monsters[i].isDied())){
-            var damanage = monsters[i].damanage();
-            for(var j = 0; j < game.user.length; j ++){
-                if(!game.user[j].isDied()){
-                    game.user[j].handleDamanage(damanage);
-
-                    damanageList.push({
-                        name: game.user[j].name,
-                        monsters: monsters[i].name,
-                        damanage: damanage
-                    });
-                    break;
-                }
-            }
-        }
+        damage += monsters[i].generateDanamage();
     }
 
-    if(damanageList.length == 0){
-        game.current ++;
-    }
-
-    game.rollTimes = 1;
-    for(var i = 0; i < game.diceList.length; i ++){
-        game.diceList[i].roll();
-        game.diceList[i].locked = false;
-        game.diceList[i].used = false;
-    }
-
-    return damanageList;
+    return {
+        damage: damage
+    };
 };
 
+handler.userHandleDamage = function(game, data){
+    var damageList = [],
+        monsters = game.getCurrentMonsters(),
+        oneAlived = false;
 
-handler.generateMonsterDanamage = function(game, data){
-    var monsters = game.getCurrentMonsters(),
-        damanageList = [];
+    for(var i = 0; i < data.length; i ++){
+        for(var j = 0; j < game.user.length; j ++){
+            if(game.user[j].type == data[i].type){
+                game.user[j].handleDamage(data[i].damage);
 
-    for(var i = 0; i < monsters.length; i ++){
-        if(!(monsters[i].isDied())){
-            var damanage = monsters[i].damanage();
-            for(var j = 0; j < game.user.length; j ++){
-                if(!game.user[j].isDied()){
-                    game.user[j].handleDamanage(damanage);
-
-                    damanageList.push({
-                        name: game.user[j].name,
-                        monsters: monsters[i].name,
-                        damanage: damanage
-                    });
-                    break;
-                }
+                damageList.push({
+                    name: game.user[j].name,
+                    damage: data[i].damage
+                });
+                break;
             }
         }
     }
 
-    if(damanageList.length == 0){
+    for(var i = 0; i < monsters.length; i ++){
+        if(!monsters[i].isDied()){
+            oneAlived = true;
+            break;
+        }
+    }
+
+    if(!oneAlived){
         game.current ++;
     }
 
@@ -188,7 +141,7 @@ handler.generateMonsterDanamage = function(game, data){
         game.diceList[i].used = false;
     }
 
-    return damanageList;
+    return damageList;
 };
 
 module.exports = handler;
