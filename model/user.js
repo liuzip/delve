@@ -1,4 +1,5 @@
 var Dice = require("./dice");
+var Skill = require("./skill");
 
 var Role = function(opt){
     this.name = opt.name;
@@ -7,6 +8,7 @@ var Role = function(opt){
     this.attackPoint = opt.point;
     this.type = opt.type;
     this.state = []; // frozen
+    this.skills = [];
 }
 
 Role.prototype.removeState = function(i){
@@ -54,6 +56,12 @@ Role.prototype.handleDamage = function(damage){
         this.currentHP = 0;
     }
 }
+
+Role.prototype.addSkill = function(opt){
+    var skill = new Skill(opt)
+    this.skills.push(skill);
+}
+
 
 if(typeof module !== 'undefined' && module.exports){
     module.exports = Role;
