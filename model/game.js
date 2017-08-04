@@ -101,9 +101,9 @@ Game.prototype.initGame = function(){
             }
 
             for(var i = 0; i < diceList.length; i ++){
-                if(dicdiceList[i].used == false){
-                    valueList[dicdiceList[i].value - 1].amount ++;
-                    valueList[dicdiceList[i].value - 1].seq.push(i);
+                if(diceList[i].used == false){
+                    valueList[diceList[i].value - 1].amount ++;
+                    valueList[diceList[i].value - 1].seq.push(i);
                 }
             }
 
@@ -148,8 +148,8 @@ Game.prototype.initGame = function(){
             }
 
             for(var i = 0; i < diceList.length; i ++){
-                if(dicdiceList[i].used == false){
-                    valueList[dicdiceList[i].value - 1] = true;
+                if(diceList[i].used == false){
+                    valueList[diceList[i].value - 1] = true;
                 }
             }
 
@@ -182,8 +182,8 @@ Game.prototype.initGame = function(){
             }
 
             for(var i = 0; i < diceList.length; i ++){
-                if(dicdiceList[i].used == false){
-                    valueList[dicdiceList[i].value - 1] = true;
+                if(diceList[i].used == false){
+                    valueList[diceList[i].value - 1] = true;
                 }
             }
 
@@ -216,8 +216,8 @@ Game.prototype.initGame = function(){
             }
 
             for(var i = 0; i < diceList.length; i ++){
-                if(dicdiceList[i].used == false){
-                    valueList[dicdiceList[i].value - 1] = true;
+                if(diceList[i].used == false){
+                    valueList[diceList[i].value - 1] = true;
                 }
             }
 
@@ -255,12 +255,12 @@ Game.prototype.initGame = function(){
             }
 
             for(var i = 0; i < diceList.length; i ++){
-                if(dicdiceList[i].used == false){
-                    valueList[dicdiceList[i].value - 1] ++;
+                if(diceList[i].used == false){
+                    valueList[diceList[i].value - 1] ++;
                 }
             }
 
-            for(var i = 0; i < 6; j ++){
+            for(var i = 0; i < 6; i ++){
                 if(valueList[i] >= 3){
                     return true;
                 }
@@ -281,12 +281,12 @@ Game.prototype.initGame = function(){
             }
 
             for(var i = 0; i < diceList.length; i ++){
-                if(dicdiceList[i].used == false){
-                    valueList[dicdiceList[i].value - 1] ++;
+                if(diceList[i].used == false){
+                    valueList[diceList[i].value - 1] ++;
                 }
             }
 
-            for(var i = 0; i < 6; j ++){
+            for(var i = 0; i < 6; i ++){
                 if(valueList[i] >= 4){
                     return true;
                 }
@@ -307,12 +307,12 @@ Game.prototype.initGame = function(){
             }
 
             for(var i = 0; i < diceList.length; i ++){
-                if(dicdiceList[i].used == false){
-                    valueList[dicdiceList[i].value - 1] ++;
+                if(diceList[i].used == false){
+                    valueList[diceList[i].value - 1] ++;
                 }
             }
 
-            for(var i = 0; i < 6; j ++){
+            for(var i = 0; i < 6; i ++){
                 if(valueList[i] >= 5){
                     return true;
                 }
@@ -333,12 +333,12 @@ Game.prototype.initGame = function(){
             }
 
             for(var i = 0; i < diceList.length; i ++){
-                if(dicdiceList[i].used == false){
-                    valueList[dicdiceList[i].value - 1] ++;
+                if(diceList[i].used == false){
+                    valueList[diceList[i].value - 1] ++;
                 }
             }
 
-            for(var i = 0; i < 6; j ++){
+            for(var i = 0; i < 6; i ++){
                 if(valueList[i] >= 6){
                     return true;
                 }

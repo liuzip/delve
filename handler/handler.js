@@ -104,6 +104,35 @@ handler.generateMonsterDamage = function(game){
     };
 };
 
+handler.userAvailableSkills = function(game){
+    var list = new Array(6);
+    for(var j = 0; j < list.length; j ++){
+        list[j] = game.diceList[j].dump();
+    }
+
+    var user = game.user,
+        monsters = game.getCurrentMonsters(),
+        ret = [];
+
+    for(var i = 0; i < user.length; i ++){
+        if(user[i].isDied()){
+            continue;
+        }
+
+        for(var j = 0; j < user[i].skills.length; j ++){
+            if(user[i].skills[j].checkAvailable(list)){
+                ret.push({
+                    user: user[i].name,
+                    skill: user[i].skills[j].name,
+                    description: user[i].skills[j].description
+                })
+            }
+        }
+    }
+
+    return ret;
+}
+
 handler.userHandleDamage = function(game, data){
     var damageList = [],
         monsters = game.getCurrentMonsters(),
