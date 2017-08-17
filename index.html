@@ -18,90 +18,101 @@
         <link rel="stylesheet" type="text/css" href="assets/css/style.css"></link>
     </head>
     <body>
-        <table id="backgroundFramework">
-            <tr class="monsterZone">
-                <td>
-                    <table class="monsterOverviewZone">
-                        <tr>
-                            <td id="monsterHeader">
-                                <img src="assets/img/zombie.jpg">
-                            </td>
-                            <td>
-                                <table class="monsterDetailZone">
-                                    <tr>
-                                        <td v-for="monster in monsters" v-if="monster.currentHP > 0">{{ monster.name }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td v-for="monster in monsters" v-if="monster.currentHP > 0">{{ monster.currentHP }} / {{ monster.maxHP }}</td>
-                                    </tr>
-                                </table>
-                            </td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-            <tr class="logZone">
-                <td>
-                    <div id="logArea">
+        <div id="mainBody">
+            <table id="backgroundFramework">
+                <tr class="monsterZone">
+                    <td>
+                        <table class="monsterOverviewZone">
+                            <tr>
+                                <td id="monsterHeader">
+                                    <img src="assets/img/zombie.jpg">
+                                </td>
+                                <td>
+                                    <table class="monsterDetailZone">
+                                        <tr>
+                                            <td v-for="monster in monsters" v-if="monster.currentHP > 0">{{ monster.name }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td v-for="monster in monsters" v-if="monster.currentHP > 0">{{ monster.currentHP }} / {{ monster.maxHP }}</td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr class="logZone">
+                    <td>
+                        <div id="logArea">
+                        </div>
+                    </td>
+                </tr>
+                <tr class="ourZone">
+                    <td>
+                        <table>
+                            <tr>
+                                <td colspan="4">
+                                    <table class="diceList">
+                                        <tr>
+                                            <td>
+                                                <div class="diceDiv" v-for="(dice, index) in dices.list" v-on:click="lockDice($event)" v-bind:seq="index">
+                                                    <img class="dice" v-bind:src="dice.imageURL">
+                                                    <img v-if="dice.locked" class="lock" src="assets/img/lock.png">
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <input type="button" id="roll" value="摇骰" v-on:click="rollDice">
+                                                剩<label id="leftRollTimes">{{ 3 - dices.rollTimes }}</label>次
+                                            </td>
+                                            <td>
+                                                <input type="button" id="attack" value="攻击">
+                                            </td>
+                                            <td>
+                                                <input type="button" id="help" value="说明" v-on:click="getHelp">
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr class="playerHead">
+                                <td v-for="user in users">
+                                    <img v-bind:src="user.imageURL">
+                                </td>
+                            </tr>
+                            <tr class="playerName">
+                                <td v-for="user in users">{{ user.name }}</td>
+                            </tr>
+                            <tr class="playerHP">
+                                <td v-for="user in users">{{ user.currentHP }}</td>
+                            </tr>
+                            <tr>
+                                <td v-for="user in users">{{ user.state }}</td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+            <div id="forbiddenMask" v-show="help.length > 0"></div>
+            <div id="dialogBackground" v-show="help.length > 0">
+                <div id="dialog">
+                    <div class="content">
+                        <table v-show="help.length > 0">
+                            <tr v-for="description in help">
+                                <td style="text-align: center; width: 15%;">{{ description.user }}</td>
+                                <td>{{ description.description }}</td>
+                            </tr>
+                        </table>
                     </div>
-                </td>
-            </tr>
-            <tr class="ourZone">
-                <td>
-                    <table>
-                        <tr>
-                            <td colspan="4">
-                                <table class="diceList">
-                                    <tr>
-                                        <td>
-                                            <div class="diceDiv" v-for="(dice, index) in dices.list" v-on:click="lockDice($event)" v-bind:seq="index">
-                                                <img class="dice" v-bind:src="dice.imageURL">
-                                                <img v-if="dice.locked" class="lock" src="assets/img/lock.png">
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <input type="button" id="roll" value="摇骰" v-on:click="rollDice">
-                                            剩<label id="leftRollTimes">{{ 3 - dices.rollTimes }}</label>次
-                                        </td>
-                                        <td>
-                                            <input type="button" id="attack" value="攻击">
-                                        </td>
-                                    </tr>
-                                </table>
-                            </td>
-                        </tr>
-                        <tr class="playerHead">
-                            <td v-for="user in users">
-                                <img v-bind:src="user.imageURL">
-                            </td>
-                        </tr>
-                        <tr class="playerName">
-                            <td v-for="user in users">{{ user.name }}</td>
-                        </tr>
-                        <tr class="playerHP">
-                            <td v-for="user in users">{{ user.currentHP }}</td>
-                        </tr>
-                        <tr>
-                            <td v-for="user in users">{{ user.state }}</td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-        </table>
-        <div id="forbiddenMask"></div>
-        <div id="dialogBackground">
-            <div id="dialog">
-                <div class="content">
+                    <input type="button" value="确定" id="dialogConfirm" class="confirm" v-bind:click="dialogConfirm">
+                    <input type="button" value="取消" id="dialogCancel" class="cancel" v-bind:click="dialogCancel">
                 </div>
-                <input type="button" value="确定" id="dialogConfirm" class="confirm">
-                <input type="button" value="取消" id="dialogCancel" class="cancel">
             </div>
-        </div>
-        <div id="warnningBackground">
-            <div id="warnning">
-                <div class="content">
+            <div id="warnningBackground">
+                <div id="warnning">
+                    <div class="content">
+                    </div>
+                    <input type="button" value="确定" id="warnningConfirm" class="confirm">
                 </div>
-                <input type="button" value="确定" id="warnningConfirm" class="confirm">
             </div>
         </div>
         <script type="text/javascript" src="assets/js/index.js"></script>

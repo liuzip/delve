@@ -5,11 +5,12 @@
     }
 
     var gData = new Vue({
-        el: "#backgroundFramework",
+        el: "#mainBody",
         data: {
             monsters: [],
             users: [],
-            dices: []
+            dices: [],
+            help: []
         },
         methods: {
             lockDice: function(e) {
@@ -29,7 +30,20 @@
                     }
                     gData.dices = data;
                 });
-            }
+            },
+            getHelp: function(){
+                connector.sendMsg("userAvailableSkills", function(data){
+                    gData.help = data;
+                    gData.dialogConfirm = function(){
+                        gData.help = [];
+                    };
+                    gData.dialogCancel = function(){
+                        gData.help = [];
+                    };
+                });
+            },
+            dialogConfirm: function(){gData.help = [];},
+            dialogCancel: function(){gData.help = [];}
         }
     });
 
@@ -82,7 +96,9 @@
                 table.append(tr)
             }
 
-            dialog({content: table})
+            dialog({
+                content: table
+            })
             dtd.resolve();
         });
         return dtd.promise();
