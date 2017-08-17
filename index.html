@@ -8,7 +8,9 @@
         <link rel="icon" href="assets/img/favicon.png" type="image/png">
         <title>delve</title>
         <!--script type="text/javascript" src="http://lib.sinaapp.com/js/jquery/1.9.1/jquery-1.9.1.min.js"></script>
+        <script src="https://unpkg.com/vue"></script>
         <script type="text/javascript" src="http://cdn.rawgit.com/dcodeIO/protobuf.js/6.8.0/dist/protobuf.min.js"></script-->
+        <script type="text/javascript" src="assets/js/lib/vue.js"></script>
         <script type="text/javascript" src="assets/js/lib/jquery.min.js"></script>
         <script type="text/javascript" src="assets/js/lib/protobuf.js"></script>
         <script type="text/javascript" src="assets/js/connector.js"></script>
@@ -25,7 +27,14 @@
                                 <img src="assets/img/zombie.jpg">
                             </td>
                             <td>
-                                <table class="monsterDetailZone"></table>
+                                <table class="monsterDetailZone">
+                                    <tr>
+                                        <td v-for="monster in monsters" v-if="monster.currentHP > 0">{{ monster.name }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td v-for="monster in monsters" v-if="monster.currentHP > 0">{{ monster.currentHP }} / {{ monster.maxHP }}</td>
+                                    </tr>
+                                </table>
                             </td>
                         </tr>
                     </table>
@@ -45,28 +54,14 @@
                                 <table class="diceList">
                                     <tr>
                                         <td>
-                                            <div class="diceDiv" id="dice1">
-                                                <img class="dice" src="assets/img/dice1.png">
-                                            </div>
-                                            <div class="diceDiv" id="dice2">
-                                                <img class="dice" src="assets/img/dice1.png">
-                                            </div>
-                                            <div class="diceDiv" id="dice3">
-                                                <img class="dice" src="assets/img/dice1.png">
-                                            </div>
-                                            <div class="diceDiv" id="dice4">
-                                                <img class="dice" src="assets/img/dice1.png">
-                                            </div>
-                                            <div class="diceDiv" id="dice5">
-                                                <img class="dice" src="assets/img/dice1.png">
-                                            </div>
-                                            <div class="diceDiv" id="dice6">
-                                                <img class="dice" src="assets/img/dice1.png">
+                                            <div class="diceDiv" v-for="(dice, index) in dices.list" v-on:click="lockDice($event)" v-bind:seq="index">
+                                                <img class="dice" v-bind:src="dice.imageURL">
+                                                <img v-if="dice.locked" class="lock" src="assets/img/lock.png">
                                             </div>
                                         </td>
                                         <td>
-                                            <input type="button" id="roll" value="摇骰">
-                                            剩<label id="leftRollTimes"></label>次
+                                            <input type="button" id="roll" value="摇骰" v-on:click="rollDice">
+                                            剩<label id="leftRollTimes">{{ 3 - dices.rollTimes }}</label>次
                                         </td>
                                         <td>
                                             <input type="button" id="attack" value="攻击">
@@ -76,36 +71,18 @@
                             </td>
                         </tr>
                         <tr class="playerHead">
-                            <td id="pirateHead">
-                                <img src="assets/img/pirate.jpg">
-                            </td>
-                            <td id="thiefHead">
-                                <img src="assets/img/thief.jpg">
-                            </td>
-                            <td id="nurseHead">
-                                <img src="assets/img/nurse.jpg">
-                            </td>
-                            <td id="wizardHead">
-                                <img src="assets/img/wizard.jpg">
+                            <td v-for="user in users">
+                                <img v-bind:src="user.imageURL">
                             </td>
                         </tr>
                         <tr class="playerName">
-                            <td id="pirateName"></td>
-                            <td id="thiefName"></td>
-                            <td id="nurseName"></td>
-                            <td id="wizardName"></td>
+                            <td v-for="user in users">{{ user.name }}</td>
                         </tr>
                         <tr class="playerHP">
-                            <td id="pirateHP"></td>
-                            <td id="thiefHP"></td>
-                            <td id="nurseHP"></td>
-                            <td id="wizardHP"></td>
+                            <td v-for="user in users">{{ user.currentHP }}</td>
                         </tr>
                         <tr>
-                            <td id="pirateState"></td>
-                            <td id="thiefState"></td>
-                            <td id="nurseState"></td>
-                            <td id="wizardState"></td>
+                            <td v-for="user in users">{{ user.state }}</td>
                         </tr>
                     </table>
                 </td>

@@ -4,104 +4,89 @@
         return;
     }
 
-    var gUsers = [],
-        gMonsters = [],
-        gDices = {},
-        updateDices = function(diceList){
-            var setListToHTML = function(diceList){
-                for(var i = 0; i < diceList.list.length; i ++){
-                    $("#dice" + (i + 1) + " img").attr("src", "assets/img/dice" + diceList.list[i].value + ".png");
-                    if(diceList.list[i].locked){
-                        $("#dice" + (i + 1)).append("<img class='lock' src='assets/img/lock.png'>");
-                    }
-                    else{
-                        $("#dice" + (i + 1)).find(".lock").remove();
-                    }
-                }
-
-                $("#leftRollTimes").text(3 - diceList.rollTimes);
-            }
-
-            if(diceList == undefined){
-                var dtd = $.Deferred();
-                connector.sendMsg("getDices", function(data){
-                    gDices = data;
-                    setListToHTML(gDices);
-                    dtd.resolve();
-                });
-                return dtd.promise();
-            }
-            else{
-                setListToHTML(diceList);
-            }
+    var gData = new Vue({
+        el: "#backgroundFramework",
+        data: {
+            monsters: [],
+            users: [],
+            dices: []
         },
-        updateMonsterList = function(monsters, user){
-            var monsterNameTR = $("<tr></tr>"),
-                monsterHPTR = $("<tr></tr>");
-
-            for(var i = 0; i < monsters.length; i ++){
-                var monsterNameTD = $("<td index='" + i + "'>" + monsters[i].name + "</td>"),
-                    monsterHPTD = $("<td index='" + i + "'>" + monsters[i].currentHP + "/" + monsters[i].maxHP + "</td>");
-
-                if(monsters[i].currentHP <= 0){
-                    monsterNameTD.css("backgroundImage", "url(assets/img/dead.png)");
+        methods: {
+            lockDice: function(e) {
+                var seq = parseInt($(e.currentTarget).attr("seq"))
+                this.dices.list[seq].locked = !(this.dices.list[seq].locked);
+            },
+            rollDice: function(){
+                var lockedList = [];
+                for(var i = 0; i < this.dices.list.length; i ++){
+                    if(this.dices.list[i].locked){
+                        lockedList.push(i);
+                    }
                 }
-
-                monsterNameTR.append(monsterNameTD);
-                monsterHPTR.append(monsterHPTD);
+                connector.sendMsg("rollDices", lockedList, function(data){
+                    for(var i = 0; i < data.list.length; i ++){
+                        data.list[i].imageURL = "assets/img/dice" + data.list[i].value + ".png";
+                    }
+                    gData.dices = data;
+                });
             }
+        }
+    });
 
-            $(".monsterDetailZone").html(monsterNameTR);
-            $(".monsterDetailZone").append(monsterHPTR);
+    var updateAllState = function(){
+        var updateDices = function(){
+            var dtd = $.Deferred();
+            connector.sendMsg("getDices", function(data){
+                for(var i = 0; i < data.list.length; i ++){
+                    data.list[i].imageURL = "assets/img/dice" + data.list[i].value + ".png";
+                }
+                gData.dices = data;
+                dtd.resolve();
+            });
+            return dtd.promise();
         },
         updateUser = function(){
             var dtd = $.Deferred();
             connector.sendMsg("getUser", function(data){
-                gUsers = data;
-                for(var i = 0; i < gUsers.length; i ++){
-                    $("#" + gUsers[i].type + "Name").text(gUsers[i].name);
-                    $("#" + gUsers[i].type + "HP").text(gUsers[i].currentHP + "HP");
-                }
-                
+                gData.users = data;
                 dtd.resolve();
             });
             return dtd.promise();
-        },
-        updateAllState = function(){
-            $.when(updateUser(),
-                updateDices()).done(function(){
-                connector.sendMsg("getCurrentMonsters", function(data){
-                    gMonsters = data;
-                    updateMonsterList(gMonsters, gUsers);
+        }
+
+        $.when(updateUser(),
+            updateDices()).done(function(){
+            connector.sendMsg("getCurrentMonsters", function(data){
+                gData.monsters = data;
+            });
+        });
+    },
+    userAvailableSkills = function(){
+        var dtd = $.Deferred();
+        connector.sendMsg("userAvailableSkills", function(data){
+            var table = $("<table></table>");
+            for(var i = 0; i < data.length; i ++){
+                var tr = $("<tr>" +
+                    "<td style='width: 10%; text-align: center;'><input type='radio' name='chooseUserSkills'></td>" +
+                    "<td style='width: 15%; text-align: center;'>" + data[i].user + "</td>" +
+                    "<td>" + data[i].description + "</td>" +
+                    "</tr>");
+                tr.click(function(){
+                    table.find("input[type=radio]").each(function(){$(this).prop("checked", false);});
+                    $(this).find("input[type=radio]").prop("checked", true);
                 });
-            });
-        },
-        userAvailableSkills = function(){
-            var dtd = $.Deferred();
-            connector.sendMsg("userAvailableSkills", function(data){
-                var table = $("<table></table>");
-                for(var i = 0; i < data.length; i ++){
-                    var tr = $("<tr>" +
-                        "<td style='width: 10%; text-align: center;'><input type='radio' name='chooseUserSkills'></td>" +
-                        "<td style='width: 15%; text-align: center;'>" + data[i].user + "</td>" +
-                        "<td>" + data[i].description + "</td>" +
-                        "</tr>");
-                    tr.click(function(){
-                        table.find("input[type=radio]").each(function(){$(this).prop("checked", false);});
-                        $(this).find("input[type=radio]").prop("checked", true);
-                    });
 
-                    if(i == 0){
-                        tr.find("input[type=radio]").prop("checked", true);
-                    }
-                    table.append(tr)
+                if(i == 0){
+                    tr.find("input[type=radio]").prop("checked", true);
                 }
+                table.append(tr)
+            }
 
-                dialog({content: table})
-                dtd.resolve();
-            });
-            return dtd.promise();
-        };
+            dialog({content: table})
+            dtd.resolve();
+        });
+        return dtd.promise();
+    };
 
     logAppend("初始化中...");
 
@@ -109,31 +94,8 @@
         logAppend("初始化完毕！");
         updateAllState();
     });
-    
-
-    $(".diceDiv").each(function(){
-        $(this).click(function(){
-            var index = parseInt($(this).attr("id").split("")[4]) - 1;
-            gDices.list[index].locked = !(gDices.list[index].locked);
-            updateDices(gDices);
-        });
-    });
-
-    $("#roll").click(function(){
-        var lockedList = [];
-        for(var i = 0; i < gDices.list.length; i ++){
-            if(gDices.list[i].locked){
-                lockedList.push(i);
-            }
-        }
-        connector.sendMsg("rollDices", lockedList, function(data){
-            gDices = data;
-            updateDices(gDices);
-        });
-    });
 
     $("#attack").click(function(){
-        
         userAvailableSkills();
 /*
                 attackMonster = function(param){

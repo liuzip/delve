@@ -9,6 +9,7 @@ var Role = function(opt){
     this.type = opt.type;
     this.state = []; // frozen
     this.skills = [];
+    this.imageURL = "assets/img/" + opt.type + ".jpg"
 }
 
 Role.prototype.removeState = function(i){
