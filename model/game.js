@@ -31,15 +31,20 @@ Game.prototype.initGame = function(){
         name: "冲锋1",
         description: "消耗1个6，造成1点伤害",
         checkAvailable: function(diceList){
-            var availableFlag = false;
+            var damage = {
+                points: 0,
+                forMonster: true,
+                dices: []
+            };
             for(var i = 0; i < diceList.length; i ++){
                 if(diceList[i].value == 6 && diceList[i].used == false){
-                    availableFlag = true;
+                    damage.points = 1;
+                    damage.dices.push(i);
                     break;
                 }
             }
 
-            return availableFlag;
+            return damage;
         }
     });
 
@@ -47,19 +52,22 @@ Game.prototype.initGame = function(){
         name: "冲锋2",
         description: "消耗2个6，造成2点伤害",
         checkAvailable: function(diceList){
-            var availableFlag = false,
-                diceCount = 0;
+            var damage = {
+                points: 0,
+                forMonster: true,
+                dices: []
+            };
             for(var i = 0; i < diceList.length; i ++){
-                if(diceList[i].value == 6 && diceList[i].used == false){
-                    diceCount ++;
+                if(diceList[i].value == 6 && diceList[i].used == false && damage.dices.length < 2){
+                    damage.dices.push(i);
                 }
             }
 
-            if(diceCount > 1){
-                availableFlag = true;
+            if(damage.dices.length > 1){
+                damage.points = 2;
             }
 
-            return availableFlag;
+            return damage;
         }
     });
 
@@ -74,15 +82,19 @@ Game.prototype.initGame = function(){
         name: "偷袭",
         description: "每一个1造成1点伤害",
         checkAvailable: function(diceList){
-            var availableFlag = false;
+            var damage = {
+                points: 0,
+                forMonster: true,
+                dices: []
+            };
             for(var i = 0; i < diceList.length; i ++){
                 if(diceList[i].value == 1 && diceList[i].used == false){
-                    availableFlag = true;
-                    break;
+                    damage.points ++;
+                    damage.dices.push(i);
                 }
             }
 
-            return availableFlag;
+            return damage;
         }
     });
 
@@ -90,11 +102,11 @@ Game.prototype.initGame = function(){
         name: "要害攻击",
         description: "2个加3个相同的数字（例如44555），造成第6个骰子点数的伤害",
         checkAvailable: function(diceList){
-            var valueList = new Array(6),
-                threeDices = false,
-                twoDices = false;
+            var valueList = new Array(6);
+
             for(var i = 0; i < 6; i ++){
                 valueList[i] = {
+                    points: (i + 1),
                     amount: 0,
                     seq: []
                 }
@@ -107,25 +119,40 @@ Game.prototype.initGame = function(){
                 }
             }
 
-            for(var i = 0; i < 6; i ++){
-                if(valueList[i].amount >= 5){
-                    threeDices = true;
-                    twoDices = true;
-                    break;
-                }
-                else if(valueList[i].amount >= 3){
-                    threeDices = true;
-                }
-                else if(valueList[i].amount == 2){
-                    twoDices = true;
+            if(valueList.filter(function(a){ return a.amount == 6 }).length > 0){
+                return {
+                    points: valueList.filter(function(a){ return a.amount == 6}).points,
+                    forMonster: true,
+                    dices: [0, 1, 2, 3, 4, 5]
                 }
             }
-
-            if(threeDices && twoDices){
-                return true;
+            else if(valueList.filter(function(a){ return a.amount == 5 }).length > 0){
+                return {
+                    points: valueList.filter(function(a){ return a.amount == 1})[0].points,
+                    forMonster: true,
+                    dices: [0, 1, 2, 3, 4, 5]
+                }
+            }
+            else if(valueList.filter(function(a){ return a.amount == 4 }).length > 0 && valueList.filter(function(a){ return a.amount == 2 }).length > 0){
+                return {
+                    points: valueList.filter(function(a){ return a.amount == 4})[0].points,
+                    forMonster: true,
+                    dices: [0, 1, 2, 3, 4, 5]
+                }
+            }
+            else if(valueList.filter(function(a){ return a.amount == 3 }).length > 0 && valueList.filter(function(a){ return a.amount == 2 }).length > 0){
+                return {
+                    points: valueList.filter(function(a){ return a.amount == 1})[0].points,
+                    forMonster: true,
+                    dices: [0, 1, 2, 3, 4, 5]
+                }
             }
             else{
-                return false;
+                return {
+                    points: 0,
+                    forMonster: true,
+                    dices: []
+                }
             }
         }
     });
@@ -163,11 +190,19 @@ Game.prototype.initGame = function(){
                 }
 
                 if(seqAvailable){
-                    return true;
+                    return {
+                        points: 2,
+                        forMonster: false,
+                        dices: [i, (i + 1), (i + 2), (i + 3)]
+                    };
                 }
             }
 
-            return false;
+            return {
+                points: 0,
+                forMonster: false,
+                dices: []
+            };
         }
     });
 
@@ -197,7 +232,10 @@ Game.prototype.initGame = function(){
                 }
 
                 if(seqAvailable){
-                    return true;
+                    return {
+                        points: diceList[5].value,
+                        dices: [i, (i + 1), (i + 2), (i + 3), (i + 4)]
+                    };
                 }
             }
 
@@ -230,7 +268,10 @@ Game.prototype.initGame = function(){
             }
 
             if(seqAvailable){
-                return true;
+                return {
+                    points: 6,
+                    dices: [0, 1, 2, 3, 4, 5]
+                };
             }
 
             return false;

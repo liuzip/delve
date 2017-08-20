@@ -104,7 +104,7 @@ handler.generateMonsterDamage = function(game){
     };
 };
 
-handler.userAvailableSkills = function(game){
+handler.getAvailableSkills = function(game){
     var list = new Array(6);
     for(var j = 0; j < list.length; j ++){
         list[j] = game.diceList[j].dump();
@@ -120,11 +120,13 @@ handler.userAvailableSkills = function(game){
         }
 
         for(var j = 0; j < user[i].skills.length; j ++){
-            if(user[i].skills[j].checkAvailable(list)){
+            var damage = user[i].skills[j].checkAvailable(list);
+            if(damage.points > 0){
                 ret.push({
                     user: user[i].name,
                     skill: user[i].skills[j].name,
-                    description: user[i].skills[j].description
+                    description: user[i].skills[j].description,
+                    damage: damage
                 })
             }
         }

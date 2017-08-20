@@ -10,7 +10,8 @@
             monsters: [],
             users: [],
             dices: [],
-            help: []
+            help: [],
+            skills: []
         },
         methods: {
             lockDice: function(e) {
@@ -32,22 +33,47 @@
                 });
             },
             getHelp: function(){
-                connector.sendMsg("userAvailableSkills", function(data){
+                connector.sendMsg("getAvailableSkills", function(data){
                     gData.help = data;
-                    gData.dialogConfirm = function(){
+                    dialogConfirm = function(){
                         gData.help = [];
                     };
-                    gData.dialogCancel = function(){
+                    dialogCancel = function(){
                         gData.help = [];
                     };
                 });
             },
-            dialogConfirm: function(){gData.help = [];},
-            dialogCancel: function(){gData.help = [];}
+            getAvailableSkills: function(){
+                connector.sendMsg("getAvailableSkills", function(data){
+                    connector.sendMsg("getAvailableSkills", function(data){
+                        gData.skills = data;
+                        dialogConfirm = function(){
+                            gData.skills = [];
+                        };
+                        dialogCancel = function(){
+                            gData.skills = [];
+                        };
+                    });
+                });
+            },
+            skillsChoose: function(e){
+                var tr = $(e.currentTarget);
+                tr.parents("table").find("input[type=radio]").each(function(){$(this).prop("checked", false);});
+                tr.find("input[type=radio]").prop("checked", true);
+            },
+            dialogConfirm: function(){
+                dialogConfirm();
+            },
+            dialogCancel: function(){
+                dialogCancel();
+            }
         }
-    });
-
-    var updateAllState = function(){
+    }),
+    dialogConfirm = function(){
+    },
+    dialogCancel = function(){
+    },
+    updateAllState = function(){
         var updateDices = function(){
             var dtd = $.Deferred();
             connector.sendMsg("getDices", function(data){
@@ -74,34 +100,6 @@
                 gData.monsters = data;
             });
         });
-    },
-    userAvailableSkills = function(){
-        var dtd = $.Deferred();
-        connector.sendMsg("userAvailableSkills", function(data){
-            var table = $("<table></table>");
-            for(var i = 0; i < data.length; i ++){
-                var tr = $("<tr>" +
-                    "<td style='width: 10%; text-align: center;'><input type='radio' name='chooseUserSkills'></td>" +
-                    "<td style='width: 15%; text-align: center;'>" + data[i].user + "</td>" +
-                    "<td>" + data[i].description + "</td>" +
-                    "</tr>");
-                tr.click(function(){
-                    table.find("input[type=radio]").each(function(){$(this).prop("checked", false);});
-                    $(this).find("input[type=radio]").prop("checked", true);
-                });
-
-                if(i == 0){
-                    tr.find("input[type=radio]").prop("checked", true);
-                }
-                table.append(tr)
-            }
-
-            dialog({
-                content: table
-            })
-            dtd.resolve();
-        });
-        return dtd.promise();
     };
 
     logAppend("初始化中...");
@@ -112,7 +110,6 @@
     });
 
     $("#attack").click(function(){
-        userAvailableSkills();
 /*
                 attackMonster = function(param){
                     var dtd = $.Deferred(); 
