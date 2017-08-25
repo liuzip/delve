@@ -65,10 +65,7 @@
                                                 剩<label id="leftRollTimes">{{ 3 - dices.rollTimes }}</label>次
                                             </td>
                                             <td>
-                                                <input type="button" id="attack" value="攻击" v-on:click="getAvailableSkills">
-                                            </td>
-                                            <td>
-                                                <input type="button" id="help" value="说明" v-on:click="getHelp">
+                                                <input type="button" id="attack" value="攻击" v-on:click="attackMonster">
                                             </td>
                                         </tr>
                                     </table>
@@ -92,24 +89,38 @@
                     </td>
                 </tr>
             </table>
-            <div id="forbiddenMask" v-if="help.length > 0 || skills.length > 0"></div>
-            <div id="dialogBackground" v-if="help.length > 0 || skills.length > 0">
+            <div id="forbiddenMask" v-if="attack"></div>
+            <div id="dialogBackground" v-if="attack">
                 <div id="dialog">
                     <div class="content">
-                        <table v-if="help.length > 0">
-                            <tr v-for="description in help">
-                                <td style="text-align: center; width: 15%;">{{ description.user }}</td>
-                                <td>{{ description.description }}</td>
-                            </tr>
-                        </table>
-                        <table v-else-if="skills.length > 0">
-                            <tr v-for="skill in skills" v-on:click="skillsChoose($event)">
-                                <td style="text-align: center;"><input type='radio' name='chooseUserSkills'></td>
-                                <td style="text-align: center;">{{ skill.user }}</td>
-                                <td>{{ skill.skill }}</td>
-                                <td>{{ skill.damage.points }}</td>
-                            </tr>
-                        </table>
+                        <div v-show="attack">
+                            <table class="userList">
+                                <tr>
+                                    <td v-bind:rowspan="currentAttackUser.user.skills.length + 2">
+                                        <label class="slideLeft" v-on:click="slideLeft($event)">
+                                        </label>
+                                    </td>
+                                    <td colspan="2" style="text-align: center;">{{ currentAttackUser.user.name }}</td>
+                                    <td v-bind:rowspan="currentAttackUser.user.skills.length + 2">
+                                        <label class="slideRight" v-on:click="slideRight($event)">
+                                        </label>
+                                    </td>
+                                </tr>
+                                <tr v-for="skill in currentAttackUser.user.skills">
+                                    <td style="width: 50px;">{{ skill.name }}</td>
+                                    <td>{{ skill.description }}</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">
+                                        <div class="diceDiv" v-for="(dice, index) in dices.list" v-on:click="useDice($event)" v-bind:seq="index">
+                                            <img class="dice" v-bind:src="dice.imageURL">
+                                            <img v-if="dice.used" class="used" src="assets/img/used.png">
+                                            <img v-if="dice.inuse" class="inuse" src="assets/img/inuse.png">
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
                     </div>
                     <input type="button" value="确定" class="confirm" v-on:click="dialogConfirm">
                     <input type="button" value="取消" class="cancel" v-on:click="dialogCancel">

@@ -28,12 +28,12 @@ input[type=button]{
 #dialogBackground #dialog{
     position: absolute;
     width: 80%;
-    height: 40%;
+    height: 60%;
     background-color: #000000;
     left: 50%;
     top: 50%;
     margin-left: calc(-40% - 12px);
-    margin-top: -40%;
+    margin-top: -60%;
     padding: 10px;
     border: 2px solid #C0C0C0;
 }
@@ -41,6 +41,11 @@ input[type=button]{
 #dialogBackground #dialog .content{
     width: 100%;
     height: 80%;
+}
+
+#dialogBackground #dialog .content .userList{
+    width: 100%;
+    height: 100%;
 }
 
 #dialogBackground #dialog .confirm,
@@ -137,32 +142,60 @@ table{
 
 .ourZone .diceList td{
     border: 0px;
-    font-size: 12px;
+    font-size: 16px;
 }
 
-.ourZone .diceList .diceDiv{
+.diceDiv{
     display: inline-block;
     position: relative;
+    margin-right: 5px;
 }
 
-.ourZone .diceList .diceDiv .dice{
+.diceDiv .dice{
     height: 30px;
     border: 1px solid grey;
-    cursor: pointer;
 }
 
-.ourZone .diceList .diceDiv .lock{
+.diceDiv .lock,
+.diceDiv .inuse{
     position: absolute;
     border: 0;
     width: 15px;
     height: 15px;
     right: 3px;
     bottom: 3px;
-    cursor: pointer;
+}
+
+.diceDiv .used{
+    position: absolute;
+    border: 0;
+    width: 30px;
+    height: 30px;
+    top: 1px;
+    left: 1px;
 }
 
 .logZone div{
     width: 100%;
     height: 100%;
     overflow-y: scroll;
+}
+
+
+.slideLeft{
+    width: 0;
+    height: 0;
+    border-top: 60px solid transparent;
+    border-right: 15px solid red;
+    border-bottom: 60px solid transparent;
+    display: inline-block;
+}
+
+.slideRight{
+    width: 0;
+    height: 0;
+    border-top: 60px solid transparent;
+    border-left: 15px solid red;
+    border-bottom: 60px solid transparent;
+    display: inline-block;
 }

@@ -10,13 +10,54 @@
             monsters: [],
             users: [],
             dices: [],
-            help: [],
-            skills: []
+            currentAttackUser: {
+                index: 0,
+                user: {}
+            },
+            attack: false
         },
         methods: {
             lockDice: function(e) {
                 var seq = parseInt($(e.currentTarget).attr("seq"))
                 this.dices.list[seq].locked = !(this.dices.list[seq].locked);
+            },
+            useDice: function(e) {
+                var seq = parseInt($(e.currentTarget).attr("seq"))
+                this.dices.list[seq].inuse = !(this.dices.list[seq].inuse);
+            },
+            slideLeft: function(e){
+                for(var i = (this.currentAttackUser.index - 1); i > -1; i --){
+                    if(this.users[i].currentHP > 0){
+                        this.currentAttackUser.index = i;
+                        this.currentAttackUser.user = this.users[i];
+                        return;
+                    }
+                }
+
+                for(var i = (this.users.length - 1); i > -1; i --){
+                    if(this.users[i].currentHP > 0){
+                        this.currentAttackUser.index = i;
+                        this.currentAttackUser.user = this.users[i];
+                        break;
+                    }
+                }
+            },
+            slideRight: function(e){
+                for(var i = (this.currentAttackUser.index + 1); i < this.users.length; i ++){
+                    if(this.users[i].currentHP > 0){
+                        this.currentAttackUser.index = i;
+                        this.currentAttackUser.user = this.users[i];
+                        return;
+                    }
+                }
+
+                for(var i = 0; i < this.users.length; i ++){
+                    if(this.users[i].currentHP > 0){
+                        this.currentAttackUser.index = i;
+                        this.currentAttackUser.user = this.users[i];
+                        break;
+                    }
+                }
             },
             rollDice: function(){
                 var lockedList = [];
@@ -32,34 +73,24 @@
                     gData.dices = data;
                 });
             },
-            getHelp: function(){
-                connector.sendMsg("getAvailableSkills", function(data){
-                    gData.help = data;
-                    dialogConfirm = function(){
-                        gData.help = [];
-                    };
-                    dialogCancel = function(){
-                        gData.help = [];
-                    };
-                });
-            },
-            getAvailableSkills: function(){
-                connector.sendMsg("getAvailableSkills", function(data){
-                    connector.sendMsg("getAvailableSkills", function(data){
-                        gData.skills = data;
-                        dialogConfirm = function(){
-                            gData.skills = [];
-                        };
-                        dialogCancel = function(){
-                            gData.skills = [];
-                        };
+            attackMonster: function(){
+                this.attack = true;
+                for(var i = 0; i < this.users.length; i ++){
+                    if(this.users[i].currentHP > 0){
+                        this.currentAttackUser.index = i;
+                        this.currentAttackUser.user = this.users[i];
+                        break;
+                    }
+                }
+                dialogConfirm = function(){
+                    connector.sendMsg("getUser", function(data){
+                        gData.users = data;
                     });
-                });
-            },
-            skillsChoose: function(e){
-                var tr = $(e.currentTarget);
-                tr.parents("table").find("input[type=radio]").each(function(){$(this).prop("checked", false);});
-                tr.find("input[type=radio]").prop("checked", true);
+                    gData.attack = false;
+                };
+                dialogCancel = function(){
+                    gData.attack = false;
+                };
             },
             dialogConfirm: function(){
                 dialogConfirm();
@@ -79,6 +110,7 @@
             connector.sendMsg("getDices", function(data){
                 for(var i = 0; i < data.list.length; i ++){
                     data.list[i].imageURL = "assets/img/dice" + data.list[i].value + ".png";
+                    data.list[i].inuse = false;
                 }
                 gData.dices = data;
                 dtd.resolve();

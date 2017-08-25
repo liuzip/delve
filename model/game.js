@@ -45,6 +45,15 @@ Game.prototype.initGame = function(){
             }
 
             return damage;
+        },
+        makeDamage: function(diceList, monsters){
+            for(var i = 0; i < diceList.length; i ++){
+                if(diceList[i].value == 6 && diceList[i].used == false){
+                    diceList[i].used = true;
+                    monsters.currentHP --;
+                    break;
+                }
+            }
         }
     });
 
@@ -68,6 +77,16 @@ Game.prototype.initGame = function(){
             }
 
             return damage;
+        },
+        makeDamage: function(diceList, monsters){
+            var amount = 0;
+            for(var i = 0; i < diceList.length; i ++){
+                if(diceList[i].value == 6 && diceList[i].used == false && amount < 2){
+                    diceList[i].used = true;
+                    monsters.currentHP --;
+                    amount ++;
+                }
+            }
         }
     });
 
