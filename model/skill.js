@@ -1,3 +1,4 @@
+// http://www.jianshu.com/p/551f02f95727
 var Skill = function(opt){
     this.name = opt.name;
     this.description = opt.description;
