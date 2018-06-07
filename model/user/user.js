@@ -1,5 +1,5 @@
-var Dice = require("./dice");
-var Skill = require("./skill");
+var Dice = require("../common/dice");
+var Skill = require("../common/skill");
 
 var Role = function(opt){
     this.name = opt.name;

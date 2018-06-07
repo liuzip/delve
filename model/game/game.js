@@ -1,6 +1,6 @@
-const Monster = require("./monster");
-const User = require("./user");
-const Dice = require("./dice");
+const Monster = require("../monster/monster");
+const User = require("../user/user");
+const Dice = require("../common/dice");
 
 var Game = function(){
     this.user = new Array(4);
@@ -30,63 +30,20 @@ Game.prototype.initGame = function(){
     this.user[0].addSkill({
         name: "冲锋1",
         description: "消耗1个6，造成1点伤害",
-        checkAvailable: function(diceList){
-            var damage = {
-                points: 0,
-                forMonster: true,
-                dices: []
-            };
-            for(var i = 0; i < diceList.length; i ++){
-                if(diceList[i].value == 6 && diceList[i].used == false){
-                    damage.points = 1;
-                    damage.dices.push(i);
-                    break;
-                }
-            }
-
-            return damage;
-        },
-        makeDamage: function(diceList, monsters){
-            for(var i = 0; i < diceList.length; i ++){
-                if(diceList[i].value == 6 && diceList[i].used == false){
-                    diceList[i].used = true;
-                    monsters.currentHP --;
-                    break;
-                }
-            }
+        skillName: "specificNumWithCount",
+        skillParam: {
+            count: 1,
+            num: 6
         }
     });
 
     this.user[0].addSkill({
         name: "冲锋2",
         description: "消耗2个6，造成2点伤害",
-        checkAvailable: function(diceList){
-            var damage = {
-                points: 0,
-                forMonster: true,
-                dices: []
-            };
-            for(var i = 0; i < diceList.length; i ++){
-                if(diceList[i].value == 6 && diceList[i].used == false && damage.dices.length < 2){
-                    damage.dices.push(i);
-                }
-            }
-
-            if(damage.dices.length > 1){
-                damage.points = 2;
-            }
-
-            return damage;
-        },
-        makeDamage: function(diceList, monsters){
-            var amount = 0;
-            for(var i = 0; i < diceList.length; i ++){
-                if(diceList[i].value == 6 && diceList[i].used == false && amount < 2){
-                    diceList[i].used = true;
-                    monsters.currentHP --;
-                    amount ++;
-                }
-            }
+        skillName: "specificNumWithCount",
+        skillParam: {
+            count: 2,
+            num: 6
         }
     });
 
@@ -100,79 +57,18 @@ Game.prototype.initGame = function(){
     this.user[1].addSkill({
         name: "偷袭",
         description: "每一个1造成1点伤害",
-        checkAvailable: function(diceList){
-            var damage = {
-                points: 0,
-                forMonster: true,
-                dices: []
-            };
-            for(var i = 0; i < diceList.length; i ++){
-                if(diceList[i].value == 1 && diceList[i].used == false){
-                    damage.points ++;
-                    damage.dices.push(i);
-                }
-            }
-
-            return damage;
+        skillName: "specificNumWithoutCount",
+        skillParam: {
+            num: 1
         }
     });
 
     this.user[1].addSkill({
         name: "要害攻击",
         description: "2个加3个相同的数字（例如44555），造成第6个骰子点数的伤害",
-        checkAvailable: function(diceList){
-            var valueList = new Array(6);
-
-            for(var i = 0; i < 6; i ++){
-                valueList[i] = {
-                    points: (i + 1),
-                    amount: 0,
-                    seq: []
-                }
-            }
-
-            for(var i = 0; i < diceList.length; i ++){
-                if(diceList[i].used == false){
-                    valueList[diceList[i].value - 1].amount ++;
-                    valueList[diceList[i].value - 1].seq.push(i);
-                }
-            }
-
-            if(valueList.filter(function(a){ return a.amount == 6 }).length > 0){
-                return {
-                    points: valueList.filter(function(a){ return a.amount == 6}).points,
-                    forMonster: true,
-                    dices: [0, 1, 2, 3, 4, 5]
-                }
-            }
-            else if(valueList.filter(function(a){ return a.amount == 5 }).length > 0){
-                return {
-                    points: valueList.filter(function(a){ return a.amount == 1})[0].points,
-                    forMonster: true,
-                    dices: [0, 1, 2, 3, 4, 5]
-                }
-            }
-            else if(valueList.filter(function(a){ return a.amount == 4 }).length > 0 && valueList.filter(function(a){ return a.amount == 2 }).length > 0){
-                return {
-                    points: valueList.filter(function(a){ return a.amount == 4})[0].points,
-                    forMonster: true,
-                    dices: [0, 1, 2, 3, 4, 5]
-                }
-            }
-            else if(valueList.filter(function(a){ return a.amount == 3 }).length > 0 && valueList.filter(function(a){ return a.amount == 2 }).length > 0){
-                return {
-                    points: valueList.filter(function(a){ return a.amount == 1})[0].points,
-                    forMonster: true,
-                    dices: [0, 1, 2, 3, 4, 5]
-                }
-            }
-            else{
-                return {
-                    points: 0,
-                    forMonster: true,
-                    dices: []
-                }
-            }
+        skillName: "aabbDamage",
+        skillParam: {
+            list: [2, 3]
         }
     });
 

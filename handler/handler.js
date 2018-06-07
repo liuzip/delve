@@ -1,5 +1,5 @@
 const tools = require("../util/common/tools");
-const Game = require("../model/game");
+const Game = require("../model/game/game");
 
 var handler = {};
 

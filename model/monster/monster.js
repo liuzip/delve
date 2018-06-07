@@ -1,4 +1,4 @@
-var Dice = require("./dice");
+var Dice = require("../common/dice");
 
 var Monster = function(opt){
     this.name = opt.name;

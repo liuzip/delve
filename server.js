@@ -11,7 +11,7 @@ const wss = new WebSocket.Server({ port: WSPORT });
 const protobuf = require("protobufjs"); // https://github.com/dcodeIO/protobuf.js
 
 const handler = require("./handler/handler");
-const Game = require("./model/game");
+const Game = require("./model/game/game");
 
 var server = http.createServer(function (request, response) {
     var pathname = url.parse(request.url).pathname;
